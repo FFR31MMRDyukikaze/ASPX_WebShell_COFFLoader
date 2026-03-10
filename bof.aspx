@@ -482,12 +482,13 @@ class CoffParser
 
 public class COFFLoader
 {
-    public static string unhexlify(string hex)
-    {
-        string ret = null;
-        for (int i = 0; i < hex.Length - 1; i += 2)
-            ret += char.ConvertFromUtf32(Convert.ToInt32(hex.Substring(i, 2), 16));
-        return ret;
+   public static byte[] UnhexlifyBytes(string hex)
+   {
+    int count = hex.Length / 2;
+    byte[] result = new byte[count];
+    for (int i = 0; i < count; i++)
+        result[i] = Convert.ToByte(hex.Substring(i * 2, 2), 16);
+    return result;
     }
 
     public static byte[] Decode(string encodedBuffer)
@@ -499,8 +500,8 @@ public class COFFLoader
     {
         byte[] functionname = Encoding.ASCII.GetBytes(functionName);
         byte[] coff_data    = Decode(coffData);
-        string tmp_arg_data = unhexlify(Encoding.Default.GetString(Decode(argDataHex)));
-        byte[] arg_data     = Encoding.Default.GetBytes(tmp_arg_data);
+        string hexStr   = Encoding.ASCII.GetString(Decode(argDataHex));
+        byte[] arg_data = UnhexlifyBytes(hexStr);
         byte[] beacon_data  = Decode("{{BEACON_DATA}}");
 
         if (CoffParser.parseCOFF(new byte[] { }, beacon_data, beacon_data.Length, null, 0) == 1)
